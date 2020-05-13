@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_bootstrap import Bootstrap
 from datetime import datetime
 from markupsafe import escape
 from random import randint
@@ -8,9 +9,10 @@ from forms import LoginForm
 
 app = Flask(__name__)
 app.config.from_object(Config)
+bootstrap = Bootstrap(app)
 
 @app.route('/')
-def home_page():
+def home():
     return render_template('home.html')
 
 @app.route('/login', methods=['GET','POST'])   
@@ -24,4 +26,5 @@ def login():
 
 @app.route('/publications')
 def pub_home():
+    pubs = [{pub: "This is my very first publication!"}, 
     return render_template('pub_home.html')
