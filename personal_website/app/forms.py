@@ -8,6 +8,18 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password',validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
+class ScreenForm(FlaskForm):
+    fullname = StringField('Full Name', validators=[DataRequired()])
+    symptom = BooleanField('Are you currently experiencing fever, nausea, or shortness of breath?')
+    contact = BooleanField('Have you been in contact with anyone with COVID-19 within the last 30 days?')
+    travel = BooleanField('Have you traveled outside of the state withing the last 30 days?')
+    submit = SubmitField('Submit')
+
+    def check_name(self, name):
+        name = Results.query.filter_by(name=fullname.data).first()
+        if name is not None:
+            raise ValidationError('This person already has been screened.')
     
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
