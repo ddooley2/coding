@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.forms import LoginForm, RegistrationForm, ScreenForm
+from app.models import User, Results
 
 @app.route('/')
 @app.route('/index')
@@ -59,3 +59,21 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/self_screen', methods=['GET','POST'])
+@login_required
+def self_screen():
+    form = ScreenForm()
+    if form.validate_on_submit():
+        symptom = form.symptom.data
+        travel = form.travel.data
+        contact = form.contact.data
+        bool_list = [symptom, travel, contact] 
+        result = Results(name=form.fullname.data, patient=current_user)
+        result.give_diagnosis(bool_list)
+        db.session.add(result)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('self_screen.html',title='Self Screening Test', form=form)
+         
+
