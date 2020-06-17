@@ -4,7 +4,6 @@ import datetime as dt
 import time
 import matplotlib.pyplot as plt
 
-
 ###Import data and perform initial trims (must be .xlsx file)
 file_path = eg.fileopenbox(msg="Please select an Excel file with raw kinetic OD data")
 df = pd.read_excel(file_path,header=26) #Save Excel data in dataframe
@@ -12,13 +11,13 @@ cut_row = df.index.get_loc(df.index[df['Unnamed: 0'] == "Results"][0]) - 2 #Trim
 df = df.iloc[:cut_row,1:] #Cut dataframe to region of data
 df = df.dropna(how='all',axis='columns') #Remove columns with no date
 
-
 ###Convert time to decimal hours format
 for i,time in enumerate(df['Time']):
     df['Time'].iloc[i] = float(time.hour + (time.minute/60))
 
-
 ###Enter blank columns
+print(df.head(10)) #Show data to aid in column selection
+
 b = input("\nEnter any blank columns in a comma-separated list: ")
 blanks = []
 for ind in b.split(","):
@@ -27,14 +26,6 @@ for ind in b.split(","):
 ###Remove blank columns
 for col in blanks:
     df = df.drop([col], axis='columns')
-
-
-###Enter control columns
-c = input("\nEnter any control columns in a comma-separated list: ")
-controls = []
-for ind in c.split(","):
-    controls.append(ind.strip())
-
 
 ###Enter data series
 series_bool = True
@@ -55,9 +46,13 @@ while series_bool:
     else:
         series_bool = False
 
+
+###Plot data
 ax = plt.gca()
 
 df.plot(x='Time', y=names, cmap = 'tab20', ax=ax)
-df.plot(x='Time',y=controls, cmap = 'tab20b', ax=ax)
-plt.show()
+plt.xlabel("Time (hr)")
+plt.ylabel("OD$^{600}$")
+plt.legend(names, loc='center left', bbox_to_anchor=(1,0.5))
 
+plt.show()
