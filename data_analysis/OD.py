@@ -50,9 +50,10 @@ while series_bool:
 ###Plot data
 ax = plt.gca()
 
-df.plot(x='Time', y=names, cmap = 'tab20', ax=ax)
+df.plot(x='Time', y=names, cmap = 'tab20', ax=ax,linewidth=2.5)
 plt.xlabel("Time (hr)")
 plt.ylabel("OD$^{600}$")
 plt.legend(names, loc='center left', bbox_to_anchor=(1,0.5))
+plt.rcParams.update({'font.size': 28})
 
 plt.show()
