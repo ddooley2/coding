@@ -2,3 +2,5 @@
 /personal_website/__pycache__/
 /personal_website/migrations
 /personal_website/app.db
+/data_analysis/.ipynb_checkpoints/
+/data_analysis/genome_drawing/__pycache__/
