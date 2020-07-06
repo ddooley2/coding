@@ -1,5 +1,4 @@
 from dna_features_viewer import BiopythonTranslator
-
 class gene_only(BiopythonTranslator):
     """Custom translator implementing the following theme:
 
@@ -12,9 +11,6 @@ class gene_only(BiopythonTranslator):
            
     def compute_filtered_features(self, features):
         """Only display genes."""
-        return [
-            feature for feature in features
-            if (feature.type == "gene")
-        ]
+        return [feature for feature in features if (feature.type == "gene")]
 
         

@@ -7,35 +7,11 @@ import pandas as pd
 import os
 from  time import sleep
 
-#class GCIndicatingtrans(BlackBoxlessLabelTranslator):
-#    def compute_feature_legend_text(self, feature):
-#        if feature.qualifiers["gc%"] < 30:
-#            return "GC < 30%"
-#        elif feature.qualifiers["gc%"] < 60:
-#            return "30-60% GC"
-#        else:
-#            return "GC > 60%"
-#    def compute_feature_color(self, feature):
-#        return {
-#        "GC < 30%": "peachpuff",
-#        "30-60% GC": "azure",
-#        "GC > 60%": "skyblue",
-#        }[self.compute_feature_legend_text(feature)]
-#    def compute_feature_fontdict(self, feature):
-#        return dict(size=10, weight="bold", color="#494949")
-#    def compute_feature_label(self, feature):
-#        if not (30 < feature.qualifiers["gc%"] < 60):
-#            normal_label = super().compute_feature_label(feature)
-#            return normal_label + "-%d%%" % feature.qualifiers["gc%"]
-#
-#def gc_content(sequence):
-#    return 100.0 * len([c for c in sequence if c in "GC"]) / len(sequence)
-
-
 ####PSEUDO CODE####
 # Input csv and make two lists: total repeats and locations
-# Sort locations from low to high, keeping the appropriate number of repeats
-# Plot in sub window below gene map
+# Input genbank file and load gene features into a var
+# Plot everything
+
 
 
 ###Input csv and make two lists: total repeats and locations
@@ -49,9 +25,21 @@ parameters = {"thickness": 15}
 trans = gene_only(features_properties=parameters)
 record = load_record(path + "/" + input("\nGive the name of a .gb file in the working folder: "))
 
-
 ###Make the graphicrecord object
 graphic_record = trans.translate_record(record)
+
+###Ask user if they wish to plot a specific gene
+gene_bool = input("\nWould you like to map repeats to a specific gene? (y/n): ")
+if gene_bool == "y":
+    ###Ask user for name or ID of gene
+    print("\nPlease enter the name of the gene of interest, as it appears in the annotation file: ")
+    while gene_bool:
+        gene = input(" ")
+        gene_record = [record for record in graphic_record.features if record.label == gene]
+        gene_record = gene_record[0]
+        break
+else:
+    gene_bool = False
 
 ###Show color palettes and prompt user to select one
 show_colors()
@@ -68,10 +56,14 @@ for i, feature in enumerate(graphic_record.features):
 fig, (ax1, ax2) = plt.subplots(
  2, 1, sharex=True
 )
-graphic_record.plot(ax=ax1, with_ruler=False, strand_in_label_threshold=40)
-graphic_record.plot_legend(ax=ax1, loc=1, frameon=False)
 
-#indices = np.arange(len(record.seq) - window_size) + 25
+if gene_bool:
+    graphic_record.plot_feature(ax=ax1,feature = gene_record, level=0)
+#    graphic_record.plot_legend(ax=ax1, loc=1, frameon=False) (for if you have multiple annotation types (peptides, CDS, etc.))
+else:
+    graphic_record.plot(ax=ax1, with_ruler=False, strand_in_label_threshold=40)
+#    graphic_record.plot_legend(ax=ax1, loc=1, frameon=False) (for if you have multiple annotation types (peptides, CDS, etc.))
+
 ax2.vlines(locs,0, reps, alpha=0.9, colors="black")
 ax2.set_ylabel("Repeat Count", fontsize=10)
 ax2.set_ylim(bottom=0, top=max(reps)+50)
