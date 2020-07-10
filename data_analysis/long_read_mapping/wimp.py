@@ -103,10 +103,11 @@ fig, ax1 = plt.subplots()
 norm_df = master_df.drop('organism',axis=1).transpose().apply(lambda x: x*100/sum(x), axis =1) ###Transposes and normalizes all columns except for organism names
 a = norm_df.plot(ax=ax1,kind='bar',stacked=True, colormap = 'viridis') ###Sets colormap to viridis by default
 a.legend(labels = org_names,loc='center left', bbox_to_anchor=(1, 0.5)) ###Sets legend outside figure and with organism names
-a.ylabel('Relative Abundance')
+a.set_ylabel('Relative Abundance')
 plt.show()
 
-master_df.to_csv(os.getcwd()+'_master.csv', index=False, header=True, sep=',')
-norm_df.to_csv(os.getcwd()+'_norm.csv', index=False, header=True, sep=',')
-fig.savefig(input('\nSave figure as: '), bbox_inches = 'tight', dpi=500)
 
+name = input('\nSave figure as: ')
+fig.savefig(name, bbox_inches = 'tight', dpi=500)
+master_df.to_csv(name.split(".")[0] +'_master.csv', index=False, header=True, sep=',')
+norm_df.to_csv(name.split(".")[0] +'_norm.csv', index=False, header=True, sep=',')
