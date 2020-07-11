@@ -37,22 +37,16 @@ for it, barcode_dir in enumerate(sorted(os.listdir(master_dir))): ###MASTER LOOP
     print('\nConverting fastq to fasta for %s...' % barcode_dir.split("/")[-1])
     printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete', length = 50) ###Initialize progress bar
     for i, filename in enumerate(sorted(os.listdir(barcode_dir))): ###LOOP THROUGH EVERY FASTQ FILE
-        fastq_path = barcode_dir + '/' + filename.split(".gz")[0] ###Path to uncompressed fastq file
-        fasta_path = barcode_dir + '/' + filename.split(".fastq.gz")[0] + ".fasta" ###Path to uncompressed fasta file
+        fastq_path = barcode_dir + '/' + filename ###Path to uncompressed fastq file
+        fasta_path = barcode_dir + '/' + filename.split(".fastq")[0] + ".fasta" ###Path to uncompressed fasta file
 
-        """ Create fastq file """
-        with gzip.open(barcode_dir + '/' + filename, 'rb') as f_in: ###Remove gzip compression
-            with open(fastq_path, "wb") as fq:
-                shutil.copyfileobj(f_in, fq)
+        """ Access fastq file and convert to fasta"""
+        with open(fastq_path, "r") as fq:
+            with open(fasta_path, "w") as f_out: ###Create unzipped fasta file
+                SeqIO.convert(fq, "fastq", f_out, "fasta")
 
-            """ Access fastq file and convert to fasta"""
-            with open(fastq_path, "r") as fq:
-                with open(fasta_path, "w") as f_out: ###Create unzipped fasta file
-                    SeqIO.convert(fq, "fastq", f_out, "fasta")
-
-            os.remove(fastq_path) ###Delete uncompressed fastq intermediary
-            fasta_paths.append(fasta_path) ###Add path to fasta file to list
-            printProgressBar(i+1, l, prefix = 'Progress:', suffix = 'Complete', length = 50) ###Update progress bar
+        fasta_paths.append(fasta_path) ###Add path to fasta file to list
+        printProgressBar(i+1, l, prefix = 'Progress:', suffix = 'Complete', length = 50) ###Update progress bar
 
     """ Step 2.2: Perform BLAST Searches """
     print('\nPerforming BLAST searches for %s...' % barcode_dir.split("/")[-1])
