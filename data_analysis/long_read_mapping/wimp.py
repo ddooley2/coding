@@ -89,7 +89,7 @@ for it, barcode_dir in enumerate(sorted(os.listdir(master_dir))): ###MASTER LOOP
         master_df[barcode_dir.split('/')[-1]] = master_df['organism'].map(all_occurences)
 
 
-""" Step 3: Plot Bar Graph showing """
+""" Step 3: Extract Organism Names From Long IDs """
 ###Extract just the organisms from the entire organism ID:
 org_names = []
 for org in master_df['organism']:
