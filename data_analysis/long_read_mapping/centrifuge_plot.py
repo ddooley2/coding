@@ -25,8 +25,14 @@ for it, tsv in enumerate(sorted(os.listdir(tsv_dir))):
 
 fig, ax1 = plt.subplots()
 norm_df = master_df.drop('organism_ID',axis=1).transpose().apply(lambda x: x*100/sum(x), axis =1) ###Transposes and normalizes all columns except for organism names
-a = norm_df.plot(ax=ax1,kind='bar',stacked=True, colormap = 'viridis') ###Sets colormap to viridis by default
-a.legend(labels = master_df['organism_ID'].tolist(),loc='center left', bbox_to_anchor=(1, 0.5)) ###Sets legend outside figure and with organism names
+a = norm_df.plot(ax=ax1,kind='bar',stacked=True, colormap = 'viridis', width=0.45) ###Sets colormap to viridis by default
+read_count = master_df.sum(axis=0, skipna=True, numeric_only=True).tolist() ###Sums the total number of mapped reads per barcode
+barcode_names = list(norm_df.index)
+xlabs = [name + '\n (' + str(read_count[i]) + ' reads)' for i, name in enumerate(barcode_names)]
+print(xlabs)
+print(type(a))
+a.set_xticklabels(xlabs,rotation=0)
+a.legend(labels=master_df['organism_ID'].tolist() ,loc='center left', bbox_to_anchor=(1, 0.5)) ###Sets legend outside figure and with organism names
 a.set_ylabel('Relative Abundance')
 plt.show()
 
