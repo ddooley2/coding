@@ -39,21 +39,24 @@ while series_bool:
         for ind in d.split(","):
             data.append(ind.strip())
         if len(d) > 1:
-            df[name+'_avg']=df.loc[:,data].mean(axis=1) #Average duplicates, triplicates, etc.
-            names.append(name+'_avg') #Save name of series to list
+            df[name]=df.loc[:,data].mean(axis=1) #Average duplicates, triplicates, etc.
+            names.append(name) #Save name of series to list
         else:
-            df[name+'_avg']=df[data]
+            df[name]=df[data]
     else:
         series_bool = False
 
 
 ###Plot data
-ax = plt.gca()
-
-df.plot(x='Time', y=names, cmap = 'tab20', ax=ax,linewidth=2.5)
-plt.xlabel("Time (hr)")
-plt.ylabel("OD$^{600}$")
-plt.legend(names, loc='center left', bbox_to_anchor=(1,0.5))
+fig, ax1 = plt.subplots()
+df.plot(x='Time', y=names, cmap = 'tab20', ax=ax1,linewidth=2.5)
+ax1.set_xlabel("Time (hr)")
+ax1.set_ylabel("OD$_{600}$")
+ax1.legend(names, loc='center left', bbox_to_anchor=(1,0.5))
 plt.rcParams.update({'font.size': 28})
 
 plt.show()
+
+plot_name = input('\nSave figure as: ')
+fig.savefig(plot_name, bbox_inches = 'tight', dpi=500)
+

@@ -5,6 +5,12 @@ import os
 
 ###Code assumes that tsv files for different barcodes are all in the same subdirectory of the cwd
 
+read_bool = input('\nWould you like relative abundances to be calculated base-wise? (Default is read-wise) (y/n)\n> ')
+if read_bool == 'y':
+    read_bool = True
+else:
+    read_bool = False
+
 tsv_dir = os.getcwd() + '/' + input("\nPlease input sub directory with tsv files: ")
 
 #Use collections.Counter on [seqID].tolist() to find out how many times each ID had a hit, after filtering out unclassified and empty hits
@@ -14,20 +20,40 @@ for it, tsv in enumerate(sorted(os.listdir(tsv_dir))):
     df = pd.read_table(tsv_path)
     df = df[~df.seqID.str.contains("unclassified")] ###Removes all rows with unclassified sequence hit
     df = df[~df.seqID.str.contains("no rank")] ###Removes all rows with no rank sequence hit
+    df = df[~(df['numMatches'] > 1)] ###Removes all rows with non-unique hits
     seqid_list = df['seqID'].tolist()
+    hit_list = df['hitLength'].tolist()
     seqid_count = Counter(seqid_list)
-    if it == 0:
-        master_df['organism_ID'] = seqid_count.keys()
-        master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
-    else:
-        master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
+    """ Map num bases or num reads """
+    if read_bool: ###Base-based mapping
+        base_count = {}
+        for i, item in enumerate(seqid_list):
+            if item not in base_count.keys():
+                base_count[item] = hit_list[i] 
+            else:
+                base_count[item] += hit_list[i]
+        if it == 0:
+            master_df['organism_ID'] = seqid_count.keys()
+            master_df[tsv.split('_')[0]+'_mappedbases'] = master_df['organism_ID'].map(base_count)
+        else:
+            master_df[tsv.split('_')[0]+'_mappedbases'] = master_df['organism_ID'].map(base_count)
+            
+    else: ###Read-based mapping
+        if it == 0:
+            master_df['organism_ID'] = seqid_count.keys()
+            master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
+        else:
+            master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
 
+
+master_df.fillna(0, inplace=True) ###Replaces NaNs with 0s in case an organism got no bases mapped to it
 
 """ Begin plotting everything """
 fig, ax1 = plt.subplots()
 norm_df = master_df.drop('organism_ID',axis=1).transpose().apply(lambda x: x*100/sum(x), axis =1) ###Transposes and normalizes all columns except for organism names
+""" Uncomment to plot read-wise relative abundances """
 barcode_names = list(norm_df.index)
-a = norm_df.plot(ax=ax1,kind='bar',stacked=True, colormap = 'tab20b', width=0.5, figsize=(4+len(barcode_names), 3+len(barcode_names))) ###
+a = norm_df.plot(ax=ax1,kind='bar',stacked=True, colormap = 'tab20', width=0.5, figsize=(4+len(barcode_names), 1+len(barcode_names))) ###
 read_count = master_df.sum(axis=0, skipna=True, numeric_only=True).tolist() ###Sums the total number of mapped reads per barcode
 
 """ Option to change bar names """
@@ -46,7 +72,11 @@ while not loop_escape:
 
 if my_bool:
     barcode_names = [str(input('\nEnter series name for %s: ' % name)) for name in barcode_names]
-xlabs = [name + '\n (' + str(read_count[i]) + ' reads)' for i, name in enumerate(barcode_names)] ###Add reads to barcode legends
+    
+if read_bool:
+    xlabs = [name + '\n (' + str("{:.3e}".format(read_count[i])) + ' bp)' for i, name in enumerate(barcode_names)] ###Add bases to barcode labels in scientific notation
+else:
+    xlabs = [name + '\n (' + str(read_count[i]) + ' reads)' for i, name in enumerate(barcode_names)] ###Add reads to barcode labels 
 
 """ Option to change label names """
 legend_names = master_df['organism_ID'].tolist()
