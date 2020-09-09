@@ -13,7 +13,7 @@ class Robot {
     public:
         string brand = "Hewlett-Packard";
         void beep() {
-            cout << "Bee-boop!" << endl;
+            cout <<  "Hello world!" << endl;
         }
 };
 
@@ -42,5 +42,6 @@ int main() {
     ofstream MyFile("test.txt");
     MyFile << my_string;
     MyFile.close();
+    Bebo.beep();
     return 0;
 }
