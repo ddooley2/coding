@@ -7,6 +7,14 @@ import pandas as pd
 import gzip, os, shutil
 from progressBar import printProgressBar
 
+"""
+Author: David Dooley
+Email: ddooley2@vols.utk.edu
+Description:
+This is a hand-made What's In My Pot script that I created as a learning exercise. Do not use this.
+centrifuge.py and centrifuge_plot.py are much better choices for analyzing and visualizing sequencing data.
+"""
+
 ###Requirements:
 # Blast executables
 

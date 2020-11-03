@@ -3,6 +3,15 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 
+"""
+Author: David Dooley
+Email: ddooley2@vols.utk.edu
+Description:
+This code takes an input directory within the working directory that contains all tsv files from centrifuge.py,
+cleans data, tabulates all hits for given reference sequences, and plots a bar graph with customizable legend
+and x labels.
+"""
+
 ###Code assumes that tsv files for different barcodes are all in the same subdirectory of the cwd
 
 read_bool = input('\nWould you like relative abundances to be calculated base-wise? (Default is read-wise) (y/n)\n> ')
@@ -29,18 +38,18 @@ for it, tsv in enumerate(sorted(os.listdir(tsv_dir))):
         base_count = {}
         for i, item in enumerate(seqid_list):
             if item not in base_count.keys():
-                base_count[item] = hit_list[i] 
+                base_count[item] = hit_list[i]
             else:
                 base_count[item] += hit_list[i]
         if it == 0:
-            master_df['organism_ID'] = seqid_count.keys()
+            master_df['organism_ID'] = [*seqid_count]
             master_df[tsv.split('_')[0]+'_mappedbases'] = master_df['organism_ID'].map(base_count)
         else:
             master_df[tsv.split('_')[0]+'_mappedbases'] = master_df['organism_ID'].map(base_count)
-            
+
     else: ###Read-based mapping
         if it == 0:
-            master_df['organism_ID'] = seqid_count.keys()
+            master_df['organism_ID'] = [*seqid_count]
             master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
         else:
             master_df[tsv.split('_')[0]] = master_df['organism_ID'].map(seqid_count)
@@ -72,11 +81,11 @@ while not loop_escape:
 
 if my_bool:
     barcode_names = [str(input('\nEnter series name for %s: ' % name)) for name in barcode_names]
-    
+
 if read_bool:
     xlabs = [name + '\n (' + str("{:.3e}".format(read_count[i])) + ' bp)' for i, name in enumerate(barcode_names)] ###Add bases to barcode labels in scientific notation
 else:
-    xlabs = [name + '\n (' + str(read_count[i]) + ' reads)' for i, name in enumerate(barcode_names)] ###Add reads to barcode labels 
+    xlabs = [name + '\n (' + str(read_count[i]) + ' reads)' for i, name in enumerate(barcode_names)] ###Add reads to barcode labels
 
 """ Option to change label names """
 legend_names = master_df['organism_ID'].tolist()

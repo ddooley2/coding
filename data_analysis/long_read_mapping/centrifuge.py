@@ -1,8 +1,17 @@
 import os
 
-cent_exe = '/home/ddooley/opt/centrifuge/centrifuge'
-ind_path = '/home/ddooley/opt/centrifuge/indices/3LB' ###Change to appropriate index path
-master_dir = '/home/ddooley/sequencing/3LB_control' ###Please change to the root directory of fastq files (code recursively goes through barcoded folders if present
+"""
+Author: David Dooley
+Email: ddooley2@vols.utk.edu
+Description:
+This code takes an input directory that contains all of the barcode subdirectories (barcode01, barcode02, etc.) within it
+and performs centrifuge read mapping on all of the reads given a centrifuge index (reference). It outputs its data
+to a series of tsv files in the working directory, which can be visualized using centrifuge_plot.py
+"""
+
+cent_exe = '/usr/local/bin/centrifuge'
+ind_path = '/Users/ddooley/bioinformatics_packages/centrifuge/indices/atcc_amplicons' ###Change to appropriate index path
+master_dir = '/Users/ddooley/sequencing/fastq_files' ###Please change to the root directory of fastq files (code recursively goes through barcoded folders if present
 
 for barcode_dir in sorted(os.listdir(master_dir)): ###MASTER LOOP THROUGH EVERY DIRECTORY IN SEQUENCING FOLDER
     barcode_dir = master_dir + '/' + barcode_dir
