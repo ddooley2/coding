@@ -5,3 +5,8 @@
 /data_analysis/.ipynb_checkpoints/
 /data_analysis/genome_drawing/__pycache__/
 /data_analysis/genome_drawing/tempCodeRunnerFile.py
+*/.DS_Store
+.DS_Store
+/misc/.vscode/*
+*/*/tsv_files/*
+*/tsv_files/*

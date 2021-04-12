@@ -1,4 +1,4 @@
-from dna_features_viewer import load_record
+import dna_features_viewer as dfv
 from translator_classes import gene_only
 from color_displayer import show_colors
 import matplotlib.pyplot as plt, matplotlib
@@ -23,10 +23,12 @@ locs = df['Location'].tolist()
 path = os.getcwd()
 parameters = {"thickness": 20}
 trans = gene_only(features_properties=parameters)
-record = load_record(path + "/" + input("\nGive the name of a .gb file in the working folder: "))
+#record = load_records(path + "/" + input("\nGive the name of a .gb file in the working folder: "))
+record = dfv.BiopythonTranslator().translate_record(path + "/" + input("\nGive the name of a .gb file in the working folder: "))
+print((x for x in record))
 
 ###Make the graphicrecord object
-graphic_record = trans.translate_record(record)
+#graphic_record = trans.translate_record(record)
 
 ###Ask user if they wish to plot a specific gene
 gene_bool = input("\nWould you like to map repeats to a specific gene? (y/n): ")
@@ -35,6 +37,7 @@ if gene_bool == "y":
     ###Ask user for name or ID of gene
     gene = str(input("\nPlease enter the name of the gene of interest, as it appears in the annotation file: "))
     for i, feature in enumerate(graphic_record.features):
+        print(feature)
         if str(feature.label) == str(gene):
             continue
         else:
@@ -56,6 +59,7 @@ plt.show()
 color = input("\nPlease enter the name of your desired color palette: ").strip()
 cmap = matplotlib.cm.get_cmap(color, len(graphic_record.features))
 colors = []
+### Assign color values to each gene feature
 for i, feature in enumerate(graphic_record.features):
     rgb = cmap(i)[:3]
     feature.color = matplotlib.colors.rgb2hex(rgb)
@@ -98,4 +102,4 @@ else:
 
 fig.suptitle(input("\nInput figure title: "), fontsize=16)
 fig.tight_layout()
-fig.savefig(input("\nPlease name your figure: "))
+fig.savefig(input("\nInput filename for figure: "))
