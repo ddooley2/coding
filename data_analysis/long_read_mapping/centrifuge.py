@@ -1,4 +1,4 @@
-import os
+import os, gzip
 
 """
 Author: David Dooley
@@ -10,13 +10,18 @@ to a series of tsv files in the working directory, which can be visualized using
 """
 
 cent_exe = '/usr/local/bin/centrifuge'
-ind_path = '/Users/ddooley/bioinformatics_packages/centrifuge/indices/atcc_amplicons' ###Change to appropriate index path
-master_dir = '/Users/ddooley/sequencing/fastq_files' ###Please change to the root directory of fastq files (code recursively goes through barcoded folders if present
+ind_path = '/Users/ddooley/bioinformatics_packages/individual_packages/centrifuge/indices/atcc' ###Change to appropriate index path
+master_dir = '/Users/ddooley/Desktop/UT_Summer_2021/sam_cohen/datasets/wimp_data/atcc_4_media_reads' ###Please change to the root directory of fastq files (code recursively goes through barcoded folders if present
 
 for barcode_dir in sorted(os.listdir(master_dir)): ###MASTER LOOP THROUGH EVERY DIRECTORY IN SEQUENCING FOLDER
     barcode_dir = master_dir + '/' + barcode_dir
     master_fastq = barcode_dir + '/master.fastq'
-    """ Concatenate all fastq files to a single large file """
+
+    for file in os.listdir(barcode_dir): ### Go through and gunzip any gzipped files
+        if ".gz" in file:
+            os.system("gunzip " + str(barcode_dir + "/" + file))
+
+    """ Concatenate all fastq files in barcode directory to a single large file """
     cat_fastq = 'cat ' + barcode_dir + '/*.fastq > ' + master_fastq
     os.system(cat_fastq)
 
@@ -24,4 +29,3 @@ for barcode_dir in sorted(os.listdir(master_dir)): ###MASTER LOOP THROUGH EVERY 
     cline = cent_exe + ' -q -x ' + ind_path + ' ' + master_fastq +  ' > ' + os.getcwd() + '/' + barcode_dir.split('/')[-1] + '_master.tsv'
     os.system(cline)
     os.remove(master_fastq)
-
